@@ -2,7 +2,6 @@ import math
 
 import numpy as np
 
-from herding.envs.assets.constants import *
 from .agent import Agent
 
 

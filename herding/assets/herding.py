@@ -1,10 +1,9 @@
 import gym
 import numpy as np
 from gym import spaces
-
-from herding.envs.assets.agents.sheep import Sheep
-from herding.envs.assets.agents.dog import Dog
-from herding.envs.assets.constants import *
+from herding.assets.agents.dog import Dog
+from herding.assets.agents.sheep import Sheep
+from herding.assets.constants import *
 
 
 class Herding(gym.Env):
@@ -73,7 +72,7 @@ class Herding(gym.Env):
         wywołaniu metody render().
         """
         if self.viewer is None:
-            from herding.envs.assets.rendering.renderer import Renderer
+            from herding.assets.rendering.renderer import Renderer
             self.viewer = Renderer(self)
 
         self.viewer.render()

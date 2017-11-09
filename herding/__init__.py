@@ -11,5 +11,5 @@ from gym.envs.registration import register
 
 register(
     id='single-dog-v0',
-    entry_point='herding.envs:HerdingSingleDog',
+    entry_point='herding:HerdingSingleDog',
 )

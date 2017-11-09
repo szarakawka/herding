@@ -1,8 +1,8 @@
-from herding.envs.assets.herding import Herding
-from herding.envs.assets.constants import EnvParams
+from herding.assets.constants import EnvParams
+from herding.assets.herding import Herding
+
 
 class HerdingSingleDog(Herding):
-
 
         def __init__(self):
             params = EnvParams()

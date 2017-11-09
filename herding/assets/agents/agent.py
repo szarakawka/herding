@@ -1,4 +1,4 @@
-from herding.envs.assets.constants import EnvParams
+from herding.assets import EnvParams
 
 
 class Agent:

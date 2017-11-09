@@ -1,4 +1,3 @@
-from herding.envs.assets.constants import *
 from .agent import Agent
 
 
