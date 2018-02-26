@@ -2,16 +2,11 @@ import math
 
 import numpy as np
 
-from .agent import Agent
+from .agent import ActiveAgent
 
 
-class Dog(Agent):
+class Dog(ActiveAgent):
 
-    """
-    RAYS i TARGETS to stałe używane przy indeksowaniu wymiaru tablicy observation.
-    observation[RAYS] odnosi się do wektora wartości promieni,
-    observation[TARGETS] odnosie się do wektora z informają o celu w jaki trafił promień
-    """
     RAYS = 0
     TARGETS = 1
     LENGTH_TO_CENTER = 0
@@ -148,3 +143,6 @@ class Dog(Agent):
                 if self.isInSight(tempAngle):
                     self.colorRays(tempAngle, distance, agent)
         self.updateObservationToCenter()
+
+class RayTracing:
+    pass

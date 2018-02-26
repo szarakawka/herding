@@ -6,21 +6,8 @@ class Sheep(Agent):
     def __init__(self, envParams: EnvParams):
         super().__init__(envParams)
 
-        self.move = self._simpleMove
-        self.setBehaviourMode(self.params.SHEEP_BEHAVIOUR)
 
-    def setBehaviourMode(self, behaviour):
-        if behaviour is SheepBehaviour.SIMPLE:
-            self.move = self._simpleMove
-        else:
-            self.move = self._complexMove
-
-    """
-    _simpleMove i _complexMove to metody poruszania się owcy.
-    Jedna z nich zostaje przypisana do self.move i wywoływana jako move().
-    self.sheepList zawiera tylko owce różne od danej
-    """
-    def _simpleMove(self):
+    def move(self):
         deltaX = 0
         deltaY = 0
         for dog in self.dogList:

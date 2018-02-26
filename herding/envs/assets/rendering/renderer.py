@@ -1,6 +1,6 @@
 from gym.envs.classic_control import rendering
 
-from herding.assets.herding import Herding
+from herding.envs.assets.herding import Herding
 from .geoms import *
 
 
