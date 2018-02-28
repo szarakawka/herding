@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 from .agent import ActiveAgent
-
+from ..herding import Herding
 
 class Dog(ActiveAgent):
 
@@ -13,8 +13,8 @@ class Dog(ActiveAgent):
     TAN_TO_CENTER = 1
 
 
-    def __init__(self, observationSpace, envParams: EnvParams, env):
-        super().__init__(envParams)
+    def __init__(self, env: Herding):
+        super().__init__(env)
 
         self.env = env
         self.rotation = 0

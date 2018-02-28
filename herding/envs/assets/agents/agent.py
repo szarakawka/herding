@@ -1,21 +1,17 @@
 from ..herding import Herding
 
-
 class Agent:
 
     def __init__(self, env: Herding):
         self.x = 0
         self.y = 0
-        self.passive_agents = None
-        self.active_agents = None
+        self.radius = env.agent_radius
+        self.dog_list = env.dog_list
+        self.sheep_list = env.sheep_list
 
-    def setPos(self, x, y):
+    def set_pos(self, x, y):
         self.x = x
         self.y = y
-
-    def setLists(self, sheepList, dogList):
-        self.dogList = dogList
-        self.sheepList = sheepList
 
 
 class PassiveAgent(Agent):
