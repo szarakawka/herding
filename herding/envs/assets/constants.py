@@ -15,7 +15,7 @@ class RotationMode:
     FREE, LOCKED_ON_HERD_CENTRE = range(2)
 
 
-class AgentsLayout:
+class AgentLayout:
     RANDOM, LAYOUT1, LAYOUT2 = range(3)
 
 

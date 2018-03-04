@@ -1,3 +1,5 @@
+import copy
+from typing import List
 from ..herding import Herding
 
 class Agent:
@@ -6,8 +8,8 @@ class Agent:
         self.x = 0
         self.y = 0
         self.radius = env.agent_radius
-        self.dog_list = env.dog_list
-        self.sheep_list = env.sheep_list
+        self.dog_list: List[ActiveAgent] = copy.copy(env.dog_list).remove(self)
+        self.sheep_list: List[PassiveAgent] = copy.copy(env.sheep_list).remove(self)
 
     def set_pos(self, x, y):
         self.x = x
@@ -23,4 +25,7 @@ class PassiveAgent(Agent):
 class ActiveAgent(Agent):
 
     def move(self, action):
+        raise NotImplementedError
+
+    def update_observation(self):
         raise NotImplementedError
