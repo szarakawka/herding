@@ -1,9 +1,9 @@
 import gym
 import numpy as np
+import random
 from gym import spaces
-from typing import List
-from .rendering.renderer import Renderer
-from .constants import *
+#from .rendering.renderer import Renderer
+from . import constants
 from . import agents
 
 
@@ -17,14 +17,15 @@ class Herding(gym.Env):
             self,
             dog_count=1,
             sheep_count=3,
-            agent_layout=AgentLayout.RANDOM,
-            sheep_type=SheepType.SIMPLE,
+            agent_layout=constants.AgentLayout.RANDOM,
+            sheep_type=constants.SheepType.SIMPLE,
             max_movement_speed=5,
             max_rotation_speed=90,
             continuous_sheep_spread_rate=1,
             ray_count=180,
             ray_length=600,
-            rotation_mode=RotationMode.FREE,
+            field_of_view=180,
+            rotation_mode=constants.RotationMode.FREE,
     ):
         self.dog_count = dog_count
         self.sheep_count = sheep_count
@@ -34,6 +35,7 @@ class Herding(gym.Env):
         self.max_rotation_speed = max_rotation_speed
         self.ray_count = ray_count
         self.ray_length = ray_length
+        self.field_of_view = field_of_view
         self.rotation_mode = rotation_mode
 
         self.map_height = 1280
@@ -41,12 +43,11 @@ class Herding(gym.Env):
         self.agent_radius = 5
 
         self.dog_list, self.sheep_list = self._create_agents()
-        self.state = self._create_state()
         self.herd_centre_point = [0, 0]
 
-        self._reward_counter = RewardCounter(self)
-        self._viewer = None
-        self._agent_layout_function = AgentLayoutFunction.get_function(self.agent_layout)
+        self.reward_counter = RewardCounter(self)
+        self.viewer = None
+        self.agent_layout_function = AgentLayoutFunction.get_function(self.agent_layout)
 
     def step(self, action):
         for i, dog in enumerate(self.dog_list):
@@ -55,61 +56,74 @@ class Herding(gym.Env):
         for sheep in self.sheep_list:
             sheep.move()
 
-        for dog in self.dog_list:
-            dog.update_observation()
+        state = self._get_state()
+        reward = self.reward_counter.get_reward()
+        is_done = self.reward_counter.is_done()
 
-        reward = self._reward_counter.get_reward()
-        is_done = self._reward_counter.is_done()
-
-        return self.state, reward, is_done, {}
+        return state, reward, is_done, {}
 
     def reset(self):
         self._set_up_agents()
-        for dog in self.dog_list:
-            dog.update_observation()
+        state = self._get_state()
 
-        return self.state
+        return state
 
     def render(self, mode='human', close=False):
         if close:
-            if self._viewer is not None:
-                self._viewer.close()
-                self._viewer = None
+            if self.viewer is not None:
+                self.viewer.close()
+                self.viewer = None
             return
 
-        if self._viewer is None:
-            self._viewer = Renderer(self)
+        # if self.viewer is None:
+        #     self.viewer = Renderer(self)
 
-        self._viewer.render()
+        self.viewer.render()
 
     def seed(self, seed=None):
         pass
 
     @property
+    def single_action_space(self):
+        dim = 3 if self.rotation_mode is constants.RotationMode.FREE else 2
+        single_action_space = spaces.Box(-1, 1, (dim,))
+        return single_action_space
+
+    @property
     def action_space(self):
-        dim = 3 if self.rotation_mode is RotationMode.FREE else 2
-        singleActionSpace = spaces.Box(-1, 1, (dim,))
-        return spaces.Tuple((singleActionSpace,) * self.dog_count)
+        action_space = spaces.Tuple((self.single_action_space,) * self.dog_count)
+        return action_space
+
+    @property
+    def single_observation_space(self):
+        single_observation_space = spaces.Box(-1, 1, (2, self.ray_count))
+        return single_observation_space
 
     @property
     def observation_space(self):
-        singleObservationSpace = spaces.Box(-1, 1, (2, self.ray_count))
-        return spaces.Tuple((singleObservationSpace,) * self.dog_count)
+        observation_space = spaces.Tuple((self.single_observation_space,) * self.dog_count)
+        return observation_space
 
     def _create_agents(self):
-        dog_list: List[agents.ActiveAgent] = []
-        sheep_list: List[agents.PassiveAgent] = []
+        dog_list = []
+        sheep_list = []
         Sheep = agents.get_sheep_class(self.sheep_type)
 
-        for i in range(self.sheep_count):
-            sheep_list.append(Sheep(self))
         for i in range(self.dog_count):
             dog_list.append(agents.Dog(self))
+        for i in range(self.sheep_count):
+            sheep_list.append(Sheep(self))
+
+        for agent in self.dog_list + self.sheep_list:
+            agent.set_lists(self.dog_list, self.sheep_list)
 
         return dog_list, sheep_list
 
-    def _create_state(self):
-        return np.ndarray(shape=(self.dog_count, 2, self.ray_count + 1), dtype=float)
+    def _get_state(self):
+        state = []
+        for dog in self.dog_list:
+            state.append(dog.get_observation())
+        return state
 
     def _update_herd_centre_point(self):
         self.herd_centre_point[0] = self.herd_centre_point[1] = 0
@@ -121,7 +135,7 @@ class Herding(gym.Env):
         self.herd_centre_point[1] /= self.sheep_count
 
     def _set_up_agents(self):
-        self._agent_layout_function(self)
+        self.agent_layout_function(self)
 
 
     # def _checkIfDone(self):
@@ -159,7 +173,9 @@ class Herding(gym.Env):
 class RewardCounter:
 
     def __init__(self, env: Herding):
-        self.herd_centre_point = env
+        self.herd_centre_point = env.herd_centre_point
+        self.sheep_list = env.sheep_list
+        self.sheep_count = env.sheep_count
         self.sheep_type = env.sheep_type
         self.previous_scatter = 0
         self.scatter = 0
@@ -172,44 +188,50 @@ class RewardCounter:
     def get_reward(self):
         return 0
 
-    def _scatter(self):
+    def _get_scatter(self):
+        scatter = 0
+        for sheep in self.sheep_list:
+            scatter += pow(sheep.x - self.herd_centre_point[0],2) + \
+                       pow(sheep.y - self.herd_centre_point[1],2)
+
+        scatter /= self.sheep_count
         return 0
 
 
 class AgentLayoutFunction:
 
     @staticmethod
-    def get_function(agent_layout: AgentLayout):
+    def get_function(agent_layout):
         return{
-            AgentLayout.RANDOM : AgentLayoutFunction._random,
-            AgentLayout.LAYOUT1 : AgentLayoutFunction._layout1,
-            AgentLayout.LAYOUT2 : AgentLayoutFunction._layout2
+            constants.AgentLayout.RANDOM : AgentLayoutFunction._random,
+            constants.AgentLayout.LAYOUT1 : AgentLayoutFunction._layout1,
+            constants.AgentLayout.LAYOUT2 : AgentLayoutFunction._layout2
         }[agent_layout]
 
     @staticmethod
-    def _random(self: Herding):
+    def _random(env):
         padding = 5
-        for agent in self.dog_list + self.sheep_list:
-            x = random.randint(agent.radius + padding, self.map_width - agent.radius - padding)
-            y = random.randint(agent.radius + padding, self.map_height - agent.radius - padding)
+        for agent in env.dog_list + env.sheep_list:
+            x = random.randint(agent.radius + padding, env.map_width - agent.radius - padding)
+            y = random.randint(agent.radius + padding, env.map_height - agent.radius - padding)
             agent.set_pos(x, y)
 
     @staticmethod
-    def _layout1(self: Herding):
+    def _layout1(env):
         padding = 5
-        for agent in self.dog_list:
-            x = random.randint(agent.radius + padding, self.map_width - agent.radius - padding)
-            y = random.randint(agent.radius + padding, self.map_height - agent.radius - padding)
+        for agent in env.dog_list:
+            x = random.randint(agent.radius + padding, env.map_width - agent.radius - padding)
+            y = random.randint(agent.radius + padding, env.map_height - agent.radius - padding)
             agent.set_pos(x, y)
 
-        w_padding = int(self.map_width / 6)
-        h_padding = int(self.map_height / 6)
-        for agent in self.sheep_list:
-            x = random.randint(agent.radius + w_padding, self.map_width - agent.radius - w_padding)
-            y = random.randint(agent.radius + h_padding, self.map_height - agent.radius - h_padding)
+        w_padding = int(env.map_width / 6)
+        h_padding = int(env.map_height / 6)
+        for agent in env.sheep_list:
+            x = random.randint(agent.radius + w_padding, env.map_width - agent.radius - w_padding)
+            y = random.randint(agent.radius + h_padding, env.map_height - agent.radius - h_padding)
             agent.set_pos(x, y)
 
     @staticmethod
-    def _layout2(self: Herding):
+    def _layout2(env):
         # TODO
         pass

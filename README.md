@@ -1,3 +1,1 @@
-#NORMANDY
-
-Inzynierka
+#OpenAI Gym herding environment

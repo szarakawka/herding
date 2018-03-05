@@ -1,9 +1,9 @@
 from .agent import PassiveAgent
-from ..herding import Herding
+
 
 class SheepComplex(PassiveAgent):
 
-    def __init__(self, env: Herding):
+    def __init__(self, env):
         super().__init__(env)
 
     def move(self):

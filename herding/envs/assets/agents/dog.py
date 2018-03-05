@@ -1,9 +1,9 @@
 import math
-
 import numpy as np
-
 from .agent import ActiveAgent
-from ..herding import Herding
+from .. import constants
+DEG2RAD = 0.01745329252
+
 
 class Dog(ActiveAgent):
 
@@ -12,18 +12,24 @@ class Dog(ActiveAgent):
     LENGTH_TO_CENTER = 0
     TAN_TO_CENTER = 1
 
-
-    def __init__(self, env: Herding):
+    
+    def __init__(self, env):
         super().__init__(env)
-
-        self.env = env
+        
+        self.rotation_mode = env.rotation_mode
+        self.ray_count = env.ray_count
+        self.ray_length = env.ray_length
+        self.max_movement_speed = env.max_movement_speed
+        self.max_rotation_speed = env.max_rotation_speed
+        self.field_of_view = env.field_of_view
+        self.herd_centre_point = env.herd_centre_point
+        
         self.rotation = 0
-        self.observation = observationSpace
-        self.rotationMode = self.params.ROTATION_MODE
         self.rayRadian = []
-        for i in range(self.params.RAYS_COUNT):
-            self.rayRadian.append((PI + ((180 - self.params.FIELD_OF_VIEW) / 360) * PI + (self.params.FIELD_OF_VIEW / (self.params.RAYS_COUNT - 1)) * DEG2RAD * i) % TWOPI)
-        if self.rayRadian[0] > self.rayRadian[self.params.RAYS_COUNT - 1]:
+        
+        for i in range(self.ray_count):
+            self.rayRadian.append((math.pi + ((180 - self.field_of_view) / 360) * math.pi + (self.field_of_view / (self.ray_count - 1)) * DEG2RAD * i) % 2 * math.pi)
+        if self.rayRadian[0] > self.rayRadian[self.ray_count - 1]:
             self.wideView = True
         else:
             self.wideView = False
@@ -33,24 +39,24 @@ class Dog(ActiveAgent):
             self.observation[self.TARGETS][i] = 0
 
     def move(self, action):
-        deltaX = action[0] * self.params.MAX_MOVEMENT_DELTA
-        deltaY = action[1] * self.params.MAX_MOVEMENT_DELTA
+        deltaX = action[0] * self.max_movement_speed
+        deltaY = action[1] * self.max_movement_speed
 
         vecLength = math.sqrt(deltaX*deltaX + deltaY * deltaY)
-        if vecLength > self.params.MAX_MOVEMENT_DELTA:
-            norm = self.params.MAX_MOVEMENT_DELTA / vecLength
+        if vecLength > self.max_movement_speed:
+            norm = self.max_movement_speed / vecLength
             deltaX *= norm
             deltaY *= norm
 
         """
-        Rotacja jest w radianach (0, 2 * PI), action[2] jest od (-1, 1),
+        Rotacja jest w radianach (0, 2 * math.pi), action[2] jest od (-1, 1),
         MAX_ROTATION_DELTA (0, 360)
         """
-        if self.rotationMode is RotationMode.FREE:
-            self.rotation += action[2] * self.params.MAX_ROTATION_DELTA * DEG2RAD
-            self.rotation = self.rotation % TWOPI
+        if self.rotation_mode is constants.RotationMode.FREE:
+            self.rotation += action[2] * self.max_rotation_speed * DEG2RAD
+            self.rotation = self.rotation % 2 * math.pi
         else:
-            self.rotation = np.arctan2(self.y - self.env.herdCentrePoint[1], self.x - self.env.herdCentrePoint[0]) + 90 * DEG2RAD
+            self.rotation = np.arctan2(self.y - self.herd_centre_point[1], self.x - self.herd_centre_point[0]) + 90 * DEG2RAD
 
         cosRotation = math.cos(self.rotation)
         sinRotation = math.sin(self.rotation)
@@ -68,7 +74,7 @@ class Dog(ActiveAgent):
     def calculateAngle(self, agent):
         tempAngle = math.atan2(self.y - agent.y, self.x - agent.x) - self.rotation
         while tempAngle < 0:
-            tempAngle += TWOPI
+            tempAngle += 2 * math.pi
         return tempAngle
 
     def calculateDelta(self, rayTan, agent):
@@ -79,10 +85,10 @@ class Dog(ActiveAgent):
 
     def isInSight(self, tempAngle):
         if self.wideView:
-            if not self.rayRadian[self.params.RAYS_COUNT-1] < tempAngle < self.rayRadian[0]:
+            if not self.rayRadian[self.ray_count-1] < tempAngle < self.rayRadian[0]:
                 return True
         else:
-            if self.rayRadian[0] < tempAngle < self.rayRadian[self.params.RAYS_COUNT-1]:
+            if self.rayRadian[0] < tempAngle < self.rayRadian[self.ray_count-1]:
                 return True
         return False
 
@@ -99,15 +105,15 @@ class Dog(ActiveAgent):
             distance = distance1 - self.radius
         else:
             distance = distance2 - self.radius
-        if 1 - (distance / self.params.RAY_LENGTH) > self.observation[self.RAYS][index]:
-            self.observation[self.RAYS][index] = 1 - (distance / self.params.RAY_LENGTH)
+        if 1 - (distance / self.ray_length) > self.observation[self.RAYS][index]:
+            self.observation[self.RAYS][index] = 1 - (distance / self.ray_length)
             self.observation[self.TARGETS][index] = 1 if type(agent) is Dog else -1
 
     def iterateRays(self, distance, agent, index, iterator):
-        while 0 <= index <= self.params.RAYS_COUNT - 1:
+        while 0 <= index <= self.ray_count - 1:
             circleDistance = self.calculateStraightToCircleDistance(agent, index)
             if circleDistance <= self.radius:
-                if (distance - (2 * self.radius)) / self.params.RAY_LENGTH < 1 - self.observation[self.RAYS][index]:
+                if (distance - (2 * self.radius)) / self.ray_length < 1 - self.observation[self.RAYS][index]:
                     self.setDistanceAndColor(index, agent)
             else:
                 break
@@ -115,8 +121,8 @@ class Dog(ActiveAgent):
 
     def colorRays(self, tempAngle, distance, agent):
         if tempAngle < self.rayRadian[0]:
-            tempAngle += TWOPI
-        left = self.params.RAYS_COUNT - 2 - int((tempAngle - self.rayRadian[0]) / ((self.params.FIELD_OF_VIEW / (self.params.RAYS_COUNT - 1)) * DEG2RAD))
+            tempAngle += 2 * math.pi
+        left = self.ray_count - 2 - int((tempAngle - self.rayRadian[0]) / ((self.field_of_view / (self.ray_count - 1)) * DEG2RAD))
         right = left + 1
         # color left rays
         self.iterateRays(distance, agent, left, -1)
@@ -124,11 +130,11 @@ class Dog(ActiveAgent):
         self.iterateRays(distance, agent, right, 1)
 
     def updateObservationToCenter(self):
-        lastIndex = self.params.RAYS_COUNT
-        absX = abs(self.x - self.env.herdCentrePoint[0])
-        absY = abs(self.y - self.env.herdCentrePoint[1])
-        self.observation[self.LENGTH_TO_CENTER][lastIndex] = pow(pow(absX, 2) + pow(absY, 2), 0.5) / self.params.RAY_LENGTH
-        self.observation[self.TAN_TO_CENTER][lastIndex] = (((np.arctan2(absX, absY) + self.rotation) % TWOPI) * 2) / TWOPI - 1
+        lastIndex = self.ray_count
+        absX = abs(self.x - self.herd_centre_point[0])
+        absY = abs(self.y - self.herd_centre_point[1])
+        self.observation[self.LENGTH_TO_CENTER][lastIndex] = pow(pow(absX, 2) + pow(absY, 2), 0.5) / self.ray_length
+        self.observation[self.TAN_TO_CENTER][lastIndex] = (((np.arctan2(absX, absY) + self.rotation) % 2 * math.pi) * 2) / 2 * math.pi - 1
 
     def updateObservation(self):
         """
@@ -136,9 +142,9 @@ class Dog(ActiveAgent):
         środowiska, gdzie indeks 'i' oznacza danego psa.
         """
         self.clearObservation()
-        for agent in self.sheepList + self.dogList:
+        for agent in self.sheep_list + self.dog_list:
             distance = self.getDistanceFromAgent(agent)
-            if distance - (2 * self.radius) < self.params.RAY_LENGTH:
+            if distance - (2 * self.radius) < self.ray_length:
                 tempAngle = self.calculateAngle(agent)
                 if self.isInSight(tempAngle):
                     self.colorRays(tempAngle, distance, agent)

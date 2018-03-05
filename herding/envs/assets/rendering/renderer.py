@@ -1,13 +1,12 @@
 from gym.envs.classic_control import rendering
 
-from herding.envs.assets.herding import Herding
+from ..herding import Herding
 from .geoms import *
 
 
 class Renderer:
 
     def __init__(self, env: Herding):
-        self.env = env
         self.params = env.params
         self.mapWidth = self.params.MAP_WIDTH
         self.mapHeight = self.params.MAP_HEIGHT

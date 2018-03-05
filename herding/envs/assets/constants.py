@@ -1,11 +1,11 @@
-import math
-import random
-
-PI = math.pi
-TWOPI = 2 * PI
-DEG2RAD = 0.01745329252
-EULER = math.e
-
+# import math
+# import random
+#
+# PI = math.pi
+# TWOPI = 2 * PI
+# DEG2RAD = 0.01745329252
+# EULER = math.e
+#
 
 class SheepType:
     SIMPLE, COMPLEX, CONTINUOUS = range(3)
