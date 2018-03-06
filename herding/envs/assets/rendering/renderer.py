@@ -1,32 +1,31 @@
 from gym.envs.classic_control import rendering
-
-from ..herding import Herding
 from .geoms import *
 
 
 class Renderer:
 
-    def __init__(self, env: Herding):
-        self.params = env.params
-        self.mapWidth = self.params.MAP_WIDTH
-        self.mapHeight = self.params.MAP_HEIGHT
-        self.geomList = []
-        self.viewer = rendering.Viewer(self.mapWidth, self.mapHeight)
-        self._initRenderObjects()
-        for geom in self.geomList:
+    def __init__(self, env):
+        self.map_width = env.map_width
+        self.map_height = env.map_height
+        self.dog_list = env.dog_list
+        self.sheep_list = env.sheep_list
+        self.geom_list = self._initRenderObjects(env)
+        self.viewer = rendering.Viewer(self.map_height, self.map_height)
+        for geom in self.geom_list:
             self.viewer.geoms.extend(geom.getParts())
 
-    def _initRenderObjects(self):
-        for sheep in self.env.sheepList:
-            self.geomList.append(sheep_geom.SheepGeom(sheep))
+    def _initRenderObjects(self, env):
+        geom_list = []
+        for dog in env.dog_list:
+            geom_list.append(dog_geom.DogGeom(dog))
+        for sheep in env.sheep_list:
+            geom_list.append(sheep_geom.SheepGeom(sheep))
 
-        for dog in self.env.dogList:
-            self.geomList.append(dog_geom.DogGeom(dog, self.params))
-
-        self.geomList.append(crosshair.Crosshair(self.env.herdCentrePoint))
+            geom_list.append(crosshair.Crosshair(env.herd_centre_point))
+        return geom_list
 
     def render(self):
-        for geom in self.geomList:
+        for geom in self.geom_list:
             geom.update()
 
         self.viewer.render()

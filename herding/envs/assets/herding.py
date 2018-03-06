@@ -2,7 +2,7 @@ import gym
 import numpy as np
 import random
 from gym import spaces
-#from .rendering.renderer import Renderer
+from .rendering.renderer import Renderer
 from . import constants
 from . import agents
 
@@ -42,9 +42,11 @@ class Herding(gym.Env):
         self.map_width = 1024
         self.agent_radius = 5
 
-        self.dog_list, self.sheep_list = self._create_agents()
         self.herd_centre_point = [0, 0]
-
+        self.dog_list = None
+        self.sheep_list = None
+        self.dog_list, self.sheep_list = self._create_agents()
+        self._set_agents_lists()
         self.reward_counter = RewardCounter(self)
         self.viewer = None
         self.agent_layout_function = AgentLayoutFunction.get_function(self.agent_layout)
@@ -75,8 +77,8 @@ class Herding(gym.Env):
                 self.viewer = None
             return
 
-        # if self.viewer is None:
-        #     self.viewer = Renderer(self)
+        if self.viewer is None:
+            self.viewer = Renderer(self)
 
         self.viewer.render()
 
@@ -114,10 +116,11 @@ class Herding(gym.Env):
         for i in range(self.sheep_count):
             sheep_list.append(Sheep(self))
 
+        return dog_list, sheep_list
+
+    def _set_agents_lists(self):
         for agent in self.dog_list + self.sheep_list:
             agent.set_lists(self.dog_list, self.sheep_list)
-
-        return dog_list, sheep_list
 
     def _get_state(self):
         state = []

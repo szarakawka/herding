@@ -48,10 +48,6 @@ class Dog(ActiveAgent):
             deltaX *= norm
             deltaY *= norm
 
-        """
-        Rotacja jest w radianach (0, 2 * math.pi), action[2] jest od (-1, 1),
-        MAX_ROTATION_DELTA (0, 360)
-        """
         if self.rotation_mode is constants.RotationMode.FREE:
             self.rotation += action[2] * self.max_rotation_speed * DEG2RAD
             self.rotation = self.rotation % 2 * math.pi
@@ -130,17 +126,13 @@ class Dog(ActiveAgent):
         self.iterateRays(distance, agent, right, 1)
 
     def updateObservationToCenter(self):
-        lastIndex = self.ray_count
+        lastIndex = self.ray_count - 1
         absX = abs(self.x - self.herd_centre_point[0])
         absY = abs(self.y - self.herd_centre_point[1])
         self.observation[self.LENGTH_TO_CENTER][lastIndex] = pow(pow(absX, 2) + pow(absY, 2), 0.5) / self.ray_length
         self.observation[self.TAN_TO_CENTER][lastIndex] = (((np.arctan2(absX, absY) + self.rotation) % 2 * math.pi) * 2) / 2 * math.pi - 1
 
-    def updateObservation(self):
-        """
-        Metoda przeprowadzająca raytracing. Zmienna observation wskazuje na tablicę observation_space[i]
-        środowiska, gdzie indeks 'i' oznacza danego psa.
-        """
+    def get_observation(self):
         self.clearObservation()
         for agent in self.sheep_list + self.dog_list:
             distance = self.getDistanceFromAgent(agent)
@@ -150,5 +142,4 @@ class Dog(ActiveAgent):
                     self.colorRays(tempAngle, distance, agent)
         self.updateObservationToCenter()
 
-class RayTracing:
-    pass
+        return self.observation

@@ -8,16 +8,16 @@ class Agent:
         self.x = 0
         self.y = 0
         self.radius = env.agent_radius
-        self.dog_list = []
-        self.sheep_list = []
+        self.dog_list = None
+        self.sheep_list = None
 
     def set_pos(self, x, y):
         self.x = x
         self.y = y
 
     def set_lists(self, dog_list, sheep_list):
-        self.dog_list = copy.copy(dog_list).remove(self)
-        self.sheep_list = copy.copy(sheep_list).remove(self)
+        self.dog_list = dog_list
+        self.sheep_list = sheep_list
 
 
 class PassiveAgent(Agent):

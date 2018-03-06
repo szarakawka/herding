@@ -11,15 +11,14 @@ class DogGeom(Geom):
         1: (0, 1, 0)
     }
 
-    def __init__(self, dogObject, envParams):
+    def __init__(self, dogObject):
         self.object = dogObject
-        self.params = envParams
 
         self.body = Part(rendering.make_circle(self.object.radius, res=50))
         self.body.setColor(185 / 255, 14 / 255, 37 / 255)
         self.rays = []
-        for _ in range(self.params.RAYS_COUNT):
-            self.rays.append(Part(rendering.Line((0, 0), (self.params.RAY_LENGTH, 0))))
+        for _ in range(self.object.ray_count):
+            self.rays.append(Part(rendering.Line((0, 0), (self.object.ray_length, 0))))
 
     def getParts(self):
         parts = [self.body.body]
