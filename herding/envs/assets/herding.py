@@ -38,9 +38,10 @@ class Herding(gym.Env):
         self.field_of_view = field_of_view
         self.rotation_mode = rotation_mode
 
-        self.map_height = 1280
-        self.map_width = 1024
-        self.agent_radius = 5
+        self.map_width = 1280
+        self.map_height = 900
+
+        self.agent_radius = 15
 
         self.herd_centre_point = [0, 0]
         self.dog_list = None

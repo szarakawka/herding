@@ -28,7 +28,7 @@ class Dog(ActiveAgent):
         self.rayRadian = []
         
         for i in range(self.ray_count):
-            self.rayRadian.append((math.pi + ((180 - self.field_of_view) / 360) * math.pi + (self.field_of_view / (self.ray_count - 1)) * DEG2RAD * i) % 2 * math.pi)
+            self.rayRadian.append((math.pi + ((180 - self.field_of_view) / 360) * math.pi + (self.field_of_view / (self.ray_count - 1)) * DEG2RAD * i) % (2 * math.pi))
         if self.rayRadian[0] > self.rayRadian[self.ray_count - 1]:
             self.wideView = True
         else:
@@ -130,11 +130,13 @@ class Dog(ActiveAgent):
         absX = abs(self.x - self.herd_centre_point[0])
         absY = abs(self.y - self.herd_centre_point[1])
         self.observation[self.LENGTH_TO_CENTER][lastIndex] = pow(pow(absX, 2) + pow(absY, 2), 0.5) / self.ray_length
-        self.observation[self.TAN_TO_CENTER][lastIndex] = (((np.arctan2(absX, absY) + self.rotation) % 2 * math.pi) * 2) / 2 * math.pi - 1
+        self.observation[self.TAN_TO_CENTER][lastIndex] = (((np.arctan2(absX, absY) + self.rotation) % (2 * math.pi)) * 2) / (2 * math.pi) - 1
 
     def get_observation(self):
         self.clearObservation()
         for agent in self.sheep_list + self.dog_list:
+            if agent is self:
+                continue
             distance = self.getDistanceFromAgent(agent)
             if distance - (2 * self.radius) < self.ray_length:
                 tempAngle = self.calculateAngle(agent)

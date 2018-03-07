@@ -10,7 +10,7 @@ class Renderer:
         self.dog_list = env.dog_list
         self.sheep_list = env.sheep_list
         self.geom_list = self._initRenderObjects(env)
-        self.viewer = rendering.Viewer(self.map_height, self.map_height)
+        self.viewer = rendering.Viewer(self.map_width, self.map_height)
         for geom in self.geom_list:
             self.viewer.geoms.extend(geom.getParts())
 

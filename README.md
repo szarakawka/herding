@@ -3,12 +3,15 @@
 Installation
 ============
 1. Download the package and unzip it.
-2. Execute "pip install -e <package directory>
-
+2. Install it via pip 
+```
+pip install -e <package_directory>
+```
 Usage
 ============
+```python
+import gym
+import herding
 
-    import gym
-    env = gym.make('herding-singleDog-v0')
-    env.reset()
-    env.render()
+env = gym.make('herding-singleDog-v0')
+```

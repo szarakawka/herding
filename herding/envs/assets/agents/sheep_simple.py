@@ -13,11 +13,11 @@ class SheepSimple(PassiveAgent):
         deltaY = 0
         for dog in self.dog_list:
             distance = pow(pow((self.x - dog.x), 2) + pow((self.y - dog.y), 2), 0.5)
-            if distance < 100:
+            if distance < 200:
                 if distance < 50:
                     distance = 50
-                deltaX += ((self.x - dog.x) / distance) * (100 - distance)
-                deltaY += ((self.y - dog.y) / distance) * (100 - distance)
+                deltaX += ((self.x - dog.x) / distance) * (200 - distance)
+                deltaY += ((self.y - dog.y) / distance) * (200 - distance)
 
         if deltaX > 50 or deltaY > 50:
             if deltaX > deltaY:
