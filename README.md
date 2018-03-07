@@ -1,4 +1,4 @@
-#OpenAI Gym herding environment
+# OpenAI Gym herding environment
 
 Installation
 ============
