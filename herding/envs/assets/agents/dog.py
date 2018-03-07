@@ -126,7 +126,7 @@ class Dog(ActiveAgent):
         self.iterateRays(distance, agent, right, 1)
 
     def updateObservationToCenter(self):
-        lastIndex = self.ray_count - 1
+        lastIndex = self.ray_count
         absX = abs(self.x - self.herd_centre_point[0])
         absY = abs(self.y - self.herd_centre_point[1])
         self.observation[self.LENGTH_TO_CENTER][lastIndex] = pow(pow(absX, 2) + pow(absY, 2), 0.5) / self.ray_length
