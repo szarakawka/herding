@@ -1,1 +1,1 @@
-from herding.envs.herding_single_dog import HerdingSingleDog
+from .herding_single_dog import HerdingSingleDog

@@ -50,7 +50,7 @@ class Dog(ActiveAgent):
 
         if self.rotation_mode is constants.RotationMode.FREE:
             self.rotation += action[2] * self.max_rotation_speed * DEG2RAD
-            self.rotation = self.rotation % 2 * math.pi
+            self.rotation = self.rotation % (2 * math.pi)
         else:
             self.rotation = np.arctan2(self.y - self.herd_centre_point[1], self.x - self.herd_centre_point[0]) + 90 * DEG2RAD
 

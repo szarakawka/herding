@@ -11,17 +11,21 @@ class Renderer:
         self.sheep_list = env.sheep_list
         self.geom_list = self._initRenderObjects(env)
         self.viewer = rendering.Viewer(self.map_width, self.map_height)
+
         for geom in self.geom_list:
             self.viewer.geoms.extend(geom.getParts())
 
     def _initRenderObjects(self, env):
         geom_list = []
+
         for dog in env.dog_list:
             geom_list.append(dog_geom.DogGeom(dog))
+
         for sheep in env.sheep_list:
             geom_list.append(sheep_geom.SheepGeom(sheep))
 
-            geom_list.append(crosshair.Crosshair(env.herd_centre_point))
+        geom_list.append(crosshair.Crosshair(env))
+
         return geom_list
 
     def render(self):

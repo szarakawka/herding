@@ -1,2 +1,2 @@
-from . herding import Herding
-from . constants import *
+from .herding import Herding
+from .constants import *
