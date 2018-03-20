@@ -15,7 +15,7 @@ class Herding(gym.Env):
     def __init__(
             self,
             dog_count=1,
-            sheep_count=10,
+            sheep_count=3,
             agent_layout=constants.AgentLayout.RANDOM,
             sheep_type=constants.SheepType.SIMPLE,
             max_movement_speed=5,
@@ -39,7 +39,7 @@ class Herding(gym.Env):
 
         self.map_width = 1280
         self.map_height = 900
-        self.agent_radius = 15
+        self.agent_radius = 10
         self.herd_target_radius = 100
 
         self.herd_centre_point = [0, 0]
@@ -91,6 +91,9 @@ class Herding(gym.Env):
 
     def seed(self, seed=None):
         pass
+
+    def close(self):
+        self.viewer.close()
 
     @property
     def single_action_space(self):
@@ -238,11 +241,16 @@ class AgentLayoutFunction:
 
     @staticmethod
     def _random(env):
-        padding = 5
-        for agent in env.dog_list + env.sheep_list:
-            x = random.randint(agent.radius + padding, env.map_width - agent.radius - padding)
-            y = random.randint(agent.radius + padding, env.map_height - agent.radius - padding)
-            agent.set_pos(x, y)
+        padding = 100
+        for sheep in env.sheep_list:
+            x = random.randint(sheep.radius + padding, env.map_width - sheep.radius - padding)
+            y = random.randint(sheep.radius + padding, env.map_height - sheep.radius - padding)
+            sheep.set_pos(x, y)
+
+        for dog in env.dog_list:
+            x = env.map_width / 2
+            y = 0
+            dog.set_pos(x, y)
 
     @staticmethod
     def _layout1(env):
