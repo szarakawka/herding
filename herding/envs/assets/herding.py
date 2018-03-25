@@ -40,7 +40,9 @@ class Herding(gym.Env):
         self.map_width = 1280
         self.map_height = 900
         self.agent_radius = 10
+
         self.herd_target_radius = 100
+        self.max_episode_reward = 100
 
         self.herd_centre_point = [0, 0]
 
@@ -192,9 +194,13 @@ class RewardCounter:
         self.sheep_count = env.sheep_count
         self.sheep_type = env.sheep_type
 
-        self.previous_scatter = None
-        self.scatter = None
+        self.previous_scatter = 0
+        self.scatter = 0
+        self.first_scatter = 0
+        self.first_iteration = True
+
         self.herd_target_radius = env.herd_target_radius
+        self.max_episode_reward = env.max_episode_reward
         self.agent_radius = env.agent_radius
 
     def is_done(self):
@@ -204,22 +210,24 @@ class RewardCounter:
             if distance > self.herd_target_radius - self.agent_radius:
                 return False
 
-        self.previous_scatter = self.scatter = None
+        self.first_iteration = True
         return True
 
     def get_reward(self):
         self.previous_scatter = self.scatter
         self.scatter = self._get_scatter()
 
-        if self.previous_scatter is None:
+        if self.first_iteration:
+            self.first_iteration = False
             self.previous_scatter = self.scatter
+            self.first_scatter = self.scatter
 
-        return self.previous_scatter - self.scatter
+        return ((self.previous_scatter - self.scatter) * self.max_episode_reward) / self.first_scatter
 
     def _get_scatter(self):
         scatter = 0
         for sheep in self.sheep_list:
-            scatter += self._get_distance(sheep)
+            scatter += max(self._get_distance(sheep) - self.herd_target_radius, 0)
 
         scatter /= self.sheep_count
         return scatter
@@ -241,30 +249,23 @@ class AgentLayoutFunction:
 
     @staticmethod
     def _random(env):
-        padding = 100
-        for sheep in env.sheep_list:
-            x = random.randint(sheep.radius + padding, env.map_width - sheep.radius - padding)
-            y = random.randint(sheep.radius + padding, env.map_height - sheep.radius - padding)
-            sheep.set_pos(x, y)
-
-        for dog in env.dog_list:
-            x = env.map_width / 2
-            y = 0
-            dog.set_pos(x, y)
-
-    @staticmethod
-    def _layout1(env):
         padding = 5
-        for agent in env.dog_list:
+        for agent in env.dog_list + env.sheep_list:
             x = random.randint(agent.radius + padding, env.map_width - agent.radius - padding)
             y = random.randint(agent.radius + padding, env.map_height - agent.radius - padding)
             agent.set_pos(x, y)
 
-        w_padding = int(env.map_width / 6)
-        h_padding = int(env.map_height / 6)
+    @staticmethod
+    def _layout1(env):
+        sheep_padding = 5
         for agent in env.sheep_list:
-            x = random.randint(agent.radius + w_padding, env.map_width - agent.radius - w_padding)
-            y = random.randint(agent.radius + h_padding, env.map_height - agent.radius - h_padding)
+            x = random.randint(agent.radius + sheep_padding, env.map_width - agent.radius - sheep_padding)
+            y = random.randint(agent.radius + sheep_padding + 200, env.map_height - agent.radius - sheep_padding)
+            agent.set_pos(x, y)
+
+        for i, agent in enumerate(env.dog_list):
+            x = (i + 1) * (env.map_width / (env.dog_count + 1))
+            y = 0
             agent.set_pos(x, y)
 
     @staticmethod

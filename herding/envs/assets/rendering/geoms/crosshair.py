@@ -12,14 +12,14 @@ class Crosshair(Geom):
         self.horizontalBar = Part(rendering.Line((0, -crosshairSize - 1), (0, crosshairSize)))
         self.herd_circle = Part(rendering.make_circle(env.herd_target_radius, res=50, filled=False))
 
-        self.verticalBar.setColor(*color)
-        self.horizontalBar.setColor(*color)
-        self.herd_circle.setColor(*color)
+        self.verticalBar.set_color(*color)
+        self.horizontalBar.set_color(*color)
+        self.herd_circle.set_color(*color)
 
-    def getParts(self):
+    def get_parts(self):
         return [self.verticalBar.body, self.horizontalBar.body, self.herd_circle.body]
 
     def update(self):
-        self.horizontalBar.setPos(self.herdCentrePoint[0], self.herdCentrePoint[1])
-        self.verticalBar.setPos(self.herdCentrePoint[0], self.herdCentrePoint[1])
-        self.herd_circle.setPos(self.herdCentrePoint[0], self.herdCentrePoint[1])
+        self.horizontalBar.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])
+        self.verticalBar.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])
+        self.herd_circle.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])

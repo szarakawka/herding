@@ -9,10 +9,10 @@ class SheepGeom(Geom):
         self.object = sheepObject
 
         self.body = Part(rendering.make_circle(self.object.radius, res=50))
-        self.body.setColor(181 / 255, 185 / 255, 215 / 255)
+        self.body.set_color(181 / 255, 185 / 255, 215 / 255)
 
-    def getParts(self):
+    def get_parts(self):
         return [self.body.body]
 
     def update(self):
-        self.body.setPos(self.object.x, self.object.y)
+        self.body.set_pos(self.object.x, self.object.y)

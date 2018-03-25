@@ -8,16 +8,16 @@ class Part:
         self.transform = rendering.Transform()
         self.body.add_attr(self.transform)
 
-    def setPos(self, x, y):
+    def set_pos(self, x, y):
         self.transform.set_translation(x, y)
 
-    def setRotation(self, rotation):
+    def set_rotation(self, rotation):
         self.transform.set_rotation(rotation)
 
-    def setScale(self, x, y):
+    def set_scale(self, x, y):
         self.transform.set_scale(x, y)
 
-    def setColor(self, r, g, b):
+    def set_color(self, r, g, b):
         self.body.set_color(r, g, b)
 
 
@@ -26,5 +26,5 @@ class Geom:
     def update(self):
         raise NotImplementedError
 
-    def getParts(self):
+    def get_parts(self):
         raise NotImplementedError

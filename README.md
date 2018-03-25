@@ -2,8 +2,6 @@
 
 Installation
 ============
-1. Download the package directly or via git.
-2. Install using pip 
 ```
 pip install -e <package_directory>
 ```

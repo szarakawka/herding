@@ -13,7 +13,7 @@ class Renderer:
         self.viewer = rendering.Viewer(self.map_width, self.map_height)
 
         for geom in self.geom_list:
-            self.viewer.geoms.extend(geom.getParts())
+            self.viewer.geoms.extend(geom.get_parts())
 
     def _initRenderObjects(self, env):
         geom_list = []
