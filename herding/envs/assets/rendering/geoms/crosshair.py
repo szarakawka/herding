@@ -5,21 +5,21 @@ from gym.envs.classic_control import rendering
 class Crosshair(Geom):
 
     def __init__(self, env):
-        self.herdCentrePoint = env.herd_centre_point
-        crosshairSize = 10
+        self.herd_centre_point = env.herd_centre_point
+        crosshair_size = 10
         color = (0, 0, 0)
-        self.verticalBar = Part(rendering.Line((-crosshairSize - 1, 0), (crosshairSize, 0)))
-        self.horizontalBar = Part(rendering.Line((0, -crosshairSize - 1), (0, crosshairSize)))
+        self.vertical_bar = Part(rendering.Line((-crosshair_size - 1, 0), (crosshair_size, 0)))
+        self.horizontal_bar = Part(rendering.Line((0, -crosshair_size - 1), (0, crosshair_size)))
         self.herd_circle = Part(rendering.make_circle(env.herd_target_radius, res=50, filled=False))
 
-        self.verticalBar.set_color(*color)
-        self.horizontalBar.set_color(*color)
+        self.vertical_bar.set_color(*color)
+        self.horizontal_bar.set_color(*color)
         self.herd_circle.set_color(*color)
 
     def get_parts(self):
-        return [self.verticalBar.body, self.horizontalBar.body, self.herd_circle.body]
+        return [self.vertical_bar.body, self.horizontal_bar.body, self.herd_circle.body]
 
     def update(self):
-        self.horizontalBar.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])
-        self.verticalBar.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])
-        self.herd_circle.set_pos(self.herdCentrePoint[0], self.herdCentrePoint[1])
+        self.horizontal_bar.set_pos(self.herd_centre_point[0], self.herd_centre_point[1])
+        self.vertical_bar.set_pos(self.herd_centre_point[0], self.herd_centre_point[1])
+        self.herd_circle.set_pos(self.herd_centre_point[0], self.herd_centre_point[1])

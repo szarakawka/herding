@@ -9,25 +9,25 @@ class SheepSimple(PassiveAgent):
         self.max_movement_speed = env.max_movement_speed
 
     def move(self):
-        deltaX = 0
-        deltaY = 0
+        delta_x = 0
+        delta_y = 0
         for dog in self.dog_list:
             distance = pow(pow((self.x - dog.x), 2) + pow((self.y - dog.y), 2), 0.5)
             if distance < 200:
                 if distance < 50:
                     distance = 50
-                deltaX += ((self.x - dog.x) / distance) * (200 - distance)
-                deltaY += ((self.y - dog.y) / distance) * (200 - distance)
+                delta_x += ((self.x - dog.x) / distance) * (200 - distance)
+                delta_y += ((self.y - dog.y) / distance) * (200 - distance)
 
-        if deltaX > 50 or deltaY > 50:
-            if deltaX > deltaY:
-                deltaY = deltaY / deltaX * 50
-                deltaX = 50
+        if delta_x > 50 or delta_y > 50:
+            if delta_x > delta_y:
+                delta_y = delta_y / delta_x * 50
+                delta_x = 50
             else:
-                deltaX = deltaX / deltaY * 50
-                deltaY = 50
+                delta_x = delta_x / delta_y * 50
+                delta_y = 50
 
-        deltaX = deltaX / 50 * self.max_movement_speed
-        deltaY = deltaY / 50 * self.max_movement_speed
-        self.x += deltaX
-        self.y += deltaY
+        delta_x = delta_x / 50 * self.max_movement_speed
+        delta_y = delta_y / 50 * self.max_movement_speed
+        self.x += delta_x
+        self.y += delta_y
