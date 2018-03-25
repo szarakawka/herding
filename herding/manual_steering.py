@@ -50,26 +50,19 @@ class ManualSteering:
         self.env.viewer.viewer.window.on_key_press = self.key_press
         self.env.viewer.viewer.window.on_key_release = self.key_release
 
-        reward_sum = 0
-        first_iteration = True
-        first_scatter = 0
+        episode_reward = 0
 
         while not self.quit:
             env_input = (self.player_input,) + self.other_dogs_input
-            state, reward, terminal, info = self.env.step(env_input)
-            reward_sum += reward
+            state, reward, terminal, _ = self.env.step(env_input)
+            episode_reward += reward
             self.env.render()
 
-            if first_iteration:
-                first_scatter = info['scatter']
+            self.print_debug(episode_reward)
 
-            self.print_debug(reward_sum, first_scatter)
-
-            first_iteration = False
             if terminal:
                 self.env.reset()
-                reward_sum = 0
-                first_iteration = True
+                episode_reward = 0
 
         self.env.close()
 

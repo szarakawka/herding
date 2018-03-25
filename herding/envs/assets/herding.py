@@ -68,8 +68,6 @@ class Herding(gym.Env):
         is_done = self.reward_counter.is_done()
 
         return state, reward, is_done, {
-            "reward": reward,
-            "is_done": is_done,
             "scatter": self.reward_counter.scatter
         }
 
@@ -151,38 +149,6 @@ class Herding(gym.Env):
 
     def _set_up_agents(self):
         self.agent_layout_function(self)
-
-
-    # def _checkIfDone(self):
-    #     if self.scatter < self.params.SCATTER_LEVEL:
-    #         return True
-    #
-    #     return False
-    #
-    # def _scatter(self):
-    #     self.herdCentrePoint[0] = self.herdCentrePoint[1] = 0
-    #     for sheep in self.sheepList:
-    #         self.herdCentrePoint[0] += sheep.x
-    #         self.herdCentrePoint[1] += sheep.y
-    #
-    #     self.herdCentrePoint[0] /= self.sheepCount
-    #     self.herdCentrePoint[1] /= self.sheepCount
-    #
-    #     self.previousScatter = self.scatter
-    #     self.scatter = 0
-    #     for sheep in self.sheepList:
-    #         self.scatter += (sheep.x - self.herdCentrePoint[0]).__pow__(2) + (
-    #             sheep.y - self.herdCentrePoint[1]).__pow__(2)
-    #
-    # def _reward(self):
-    #     self._scatter()
-    #     self.rewardValue = self.previousScatter - self.scatter
-    #     if self.scatter < self.previousScatter:
-    #         self.rewardValue.__neg__()
-    #     if self.scatter < self.params.SCATTER_LEVEL:
-    #         self.rewardValue = self.params.REWARD_FOR_HERDING
-    #
-    #     return self.rewardValue
 
 
 class RewardCounter:
