@@ -25,6 +25,7 @@ class Herding(gym.Env):
             ray_length=600,
             field_of_view=180,
             rotation_mode=constants.RotationMode.FREE,
+            use_tan_to_center=False
     ):
         self.dog_count = dog_count
         self.sheep_count = sheep_count
@@ -36,6 +37,7 @@ class Herding(gym.Env):
         self.ray_length = ray_length
         self.field_of_view = field_of_view
         self.rotation_mode = rotation_mode
+        self.use_tan_to_center = use_tan_to_center
 
         self.map_width = 1280
         self.map_height = 900

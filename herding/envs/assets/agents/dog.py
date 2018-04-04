@@ -23,7 +23,8 @@ class Dog(ActiveAgent):
         self.max_rotation_speed = env.max_rotation_speed
         self.field_of_view = env.field_of_view
         self.herd_centre_point = env.herd_centre_point
-        
+        self.use_tan_to_center = env.use_tan_to_center
+
         self.rotation = 0
         self.ray_radian = []
         
@@ -142,6 +143,8 @@ class Dog(ActiveAgent):
                 temp_angle = self.calculate_angle(agent)
                 if self.is_in_sight(temp_angle):
                     self.color_rays(temp_angle, distance, agent)
-        #self.update_observation_to_center()
+
+        if self.use_tan_to_center:
+            self.update_observation_to_center()
 
         return self.observation

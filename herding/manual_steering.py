@@ -58,7 +58,7 @@ class ManualSteering:
             episode_reward += reward
             self.env.render()
 
-            self.print_debug(episode_reward)
+            #self.print_debug(episode_reward)
 
             if terminal:
                 self.env.reset()

@@ -7,6 +7,6 @@ import gym
 gym.envs.registration.register(
     id='herding-singleDog-v0',
     entry_point='herding.envs:HerdingSingleDog',
-    timestep_limit=1000,
+    timestep_limit=8000,
     nondeterministic=False
 )
