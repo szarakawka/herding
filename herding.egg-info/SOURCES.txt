@@ -1,0 +1,6 @@
+README.md
+herding.egg-info/PKG-INFO
+herding.egg-info/SOURCES.txt
+herding.egg-info/dependency_links.txt
+herding.egg-info/requires.txt
+herding.egg-info/top_level.txt

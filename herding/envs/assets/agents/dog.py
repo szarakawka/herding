@@ -12,7 +12,6 @@ class Dog(ActiveAgent):
     LENGTH_TO_CENTER = 0
     TAN_TO_CENTER = 1
 
-    
     def __init__(self, env):
         super().__init__(env)
         

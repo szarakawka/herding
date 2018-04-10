@@ -1,10 +1,12 @@
 import gym
+import numpy as np
 import random
 from gym import spaces
 from .rendering.renderer import Renderer
 from . import constants
 from . import agents
 import math
+
 
 class Herding(gym.Env):
 
@@ -39,8 +41,10 @@ class Herding(gym.Env):
         self.rotation_mode = rotation_mode
         self.use_tan_to_center = use_tan_to_center
 
-        self.map_width = 1280
-        self.map_height = 900
+        self.map_width = 800
+        self.map_height = 600
+        # self.map_width = 1280
+        # self.map_height = 900
         self.agent_radius = 10
 
         self.herd_target_radius = 100
@@ -100,7 +104,7 @@ class Herding(gym.Env):
     @property
     def single_action_space(self):
         dim = 3 if self.rotation_mode is constants.RotationMode.FREE else 2
-        single_action_space = spaces.Box(-1, 1, (dim,))
+        single_action_space = spaces.Box(-1, 1, shape=(dim,), dtype=np.float32)
         return single_action_space
 
     @property
@@ -110,7 +114,7 @@ class Herding(gym.Env):
 
     @property
     def single_observation_space(self):
-        single_observation_space = spaces.Box(-1, 1, (2, self.ray_count))
+        single_observation_space = spaces.Box(-1, 1, shape=(2, self.ray_count), dtype=np.float32)
         return single_observation_space
 
     @property
